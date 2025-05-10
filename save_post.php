@@ -18,13 +18,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $slug = generateSlug($title);
     
     // Format the image URL
-    $featured_image = "https://ik.imagekit.io/mywine/andiblog/tr:w-800,h-400/" . $image_name . ".jpg";
+    $featured_image = "https://ik.imagekit.io/jeaniblog/blog/tr:w-800,h-400/" . $image_name . ".jpg";
     
     // Format tags as JSON
     $tags = formatTags($tags_string);
     
     // Prepare the SQL statement
-    $sql = "INSERT INTO blog_posts (
+    $sql = "INSERT INTO jeanine_blog_posts (
                 title,
                 slug,
                 excerpt,

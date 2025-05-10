@@ -11,14 +11,14 @@ if (isset($_GET['slug'])) {
     
     try {
         // Check if the post exists
-        $checkQuery = "SELECT slug FROM blog_posts WHERE slug = :slug";
+        $checkQuery = "SELECT slug FROM jeanine_blog_posts WHERE slug = :slug";
         $checkStmt = $pdo->prepare($checkQuery);
         $checkStmt->bindParam(':slug', $slug);
         $checkStmt->execute();
         
         if ($checkStmt->rowCount() > 0) {
             // Delete the post
-            $deleteQuery = "DELETE FROM blog_posts WHERE slug = :slug";
+            $deleteQuery = "DELETE FROM jeanine_blog_posts WHERE slug = :slug";
             $deleteStmt = $pdo->prepare($deleteQuery);
             $deleteStmt->bindParam(':slug', $slug);
             $deleteStmt->execute();

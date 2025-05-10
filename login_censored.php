@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="mt-4 d-grid">
-                    <a href="https://blog.andierni.ch" class="btn btn-outline-secondary">
+                    <a href="https://aetest.andierni.ch" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Go to Blog
                     </a>
                 </div>

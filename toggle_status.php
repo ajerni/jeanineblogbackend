@@ -11,7 +11,7 @@ if (isset($_GET['slug'])) {
     
     try {
         // First, get the current status
-        $query = "SELECT published FROM blog_posts WHERE slug = :slug";
+        $query = "SELECT published FROM jeanine_blog_posts WHERE slug = :slug";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(':slug', $slug);
         $stmt->execute();
@@ -21,7 +21,7 @@ if (isset($_GET['slug'])) {
             $newStatus = $post['published'] ? 0 : 1; // Toggle the status
             
             // Update the status
-            $updateQuery = "UPDATE blog_posts SET published = :status WHERE slug = :slug";
+            $updateQuery = "UPDATE jeanine_blog_posts SET published = :status WHERE slug = :slug";
             $updateStmt = $pdo->prepare($updateQuery);
             $updateStmt->bindParam(':status', $newStatus);
             $updateStmt->bindParam(':slug', $slug);

@@ -54,7 +54,7 @@ require_once 'auth.php';
                     <div class="mb-3">
                         <label for="image_name" class="form-label">Image Name</label>
                         <input type="text" class="form-control" id="image_name" name="image_name" placeholder="e.g. apfel" required>
-                        <div class="form-text">Will be used in: https://ik.imagekit.io/mywine/andiblog/tr:w-800,h-400/[image_name].jpg</div>
+                        <div class="form-text">Will be used in: https://ik.imagekit.io/jeaniblog/blog/tr:w-800,h-400/[image_name].jpg</div>
                     </div>
                     
                     <div class="mb-3">

@@ -7,7 +7,7 @@ require_once 'config.php';
 
 // Get all blog posts
 try {
-    $sql = "SELECT * FROM blog_posts ORDER BY published_date DESC";
+    $sql = "SELECT * FROM jeanine_blog_posts ORDER BY published_date DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $posts = $stmt->fetchAll();

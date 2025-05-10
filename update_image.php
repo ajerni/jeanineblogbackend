@@ -16,10 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     // Format the image URL
-    $featured_image = "https://ik.imagekit.io/mywine/andiblog/tr:w-800,h-400/" . $image_name . ".jpg";
+    $featured_image = "https://ik.imagekit.io/jeaniblog/blog/tr:w-800,h-400/" . $image_name . ".jpg";
     
     // Prepare the SQL statement
-    $sql = "UPDATE blog_posts SET featured_image = :featured_image, updated_date = NOW() WHERE slug = :slug";
+    $sql = "UPDATE jeanine_blog_posts SET featured_image = :featured_image, updated_date = NOW() WHERE slug = :slug";
     
     try {
         // Prepare and execute the statement
