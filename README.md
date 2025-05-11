@@ -1,6 +1,6 @@
 # Blog Backend
 
-A simple PHP backend for managing blog posts with password protection.
+A simple PHP backend for managing blog posts with password protection. JJ version.
 
 ## Features
 
