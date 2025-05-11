@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
         
         // Redirect back with success message
-        header("Location: posts.php?image_updated=1");
+        header("Location: posts.php?image_uploaded=1");
         exit();
     } catch(PDOException $e) {
         header("Location: posts.php?error=" . urlencode("Could not update image: " . $e->getMessage()));

@@ -57,7 +57,7 @@ try {
         </div>
         <?php endif; ?>
         
-        <?php if(isset($_GET['image_updated'])): ?>
+        <?php if(isset($_GET['image_updated']) || isset($_GET['image_uploaded'])): ?>
         <div class="alert alert-success">
             Image updated successfully!
         </div>
@@ -119,11 +119,16 @@ try {
                                                 
                                                 <div class="mb-3">
                                                     <label for="image_name" class="form-label">New Image Name:</label>
-                                                    <input type="text" class="form-control" id="image_name" name="image_name" 
+                                                    <input type="text" class="form-control" id="image_name_<?= htmlspecialchars($post['id']) ?>" name="image_name" 
                                                            placeholder="e.g. apfel" required>
                                                     <div class="form-text">
                                                         Will be used in: https://ik.imagekit.io/mywine/andiblog/tr:w-800,h-400/[image_name].jpg
                                                     </div>
+                                                    <button type="button" class="btn btn-secondary mt-2" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#uploadImageModal<?= htmlspecialchars($post['id']) ?>">
+                                                        Upload Image
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -131,6 +136,42 @@ try {
                                                 <button type="submit" class="btn btn-primary">Update Image</button>
                                             </div>
                                         </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Modal for Uploading Image -->
+                            <div class="modal fade" id="uploadImageModal<?= htmlspecialchars($post['id']) ?>" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Upload Image for "<?= htmlspecialchars($post['title']) ?>"</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="uploadAlert<?= htmlspecialchars($post['id']) ?>" class="alert d-none mb-3"></div>
+                                            
+                                            <form id="uploadImageForm<?= htmlspecialchars($post['id']) ?>" action="upload_image.php" method="post" enctype="multipart/form-data">
+                                                <input type="hidden" name="slug" value="<?= htmlspecialchars($post['slug']) ?>">
+                                                <input type="hidden" name="return_url" value="posts.php">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="direct_modal_image_name_<?= htmlspecialchars($post['id']) ?>" class="form-label">Image Name:</label>
+                                                    <input type="text" class="form-control" id="direct_modal_image_name_<?= htmlspecialchars($post['id']) ?>" name="image_name" 
+                                                           placeholder="e.g. apfel" required>
+                                                    <div class="form-text">This will be the name of your uploaded image (without .jpg extension)</div>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="direct_modal_image_<?= htmlspecialchars($post['id']) ?>" class="form-label">Select JPG Image:</label>
+                                                    <input type="file" class="form-control" id="direct_modal_image_<?= htmlspecialchars($post['id']) ?>" name="image" accept=".jpg,.jpeg" required>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-primary" id="directUploadButton<?= htmlspecialchars($post['id']) ?>">Direct Upload</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -181,5 +222,146 @@ try {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sync image name between the change and upload forms
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php foreach($posts as $post): ?>
+            (function() {
+                const postId = <?= htmlspecialchars($post['id']) ?>;
+                const changeImageInput = document.getElementById('image_name_' + postId);
+                const directImageName = document.getElementById('direct_modal_image_name_' + postId);
+                const directUploadButton = document.getElementById('directUploadButton' + postId);
+                const uploadAlert = document.getElementById('uploadAlert' + postId);
+                const uploadModalEl = document.getElementById('uploadImageModal' + postId);
+                const changeModalEl = document.getElementById('changeImageModal' + postId);
+                
+                // Make sure critical elements exist before using them
+                if (!directUploadButton) {
+                    console.error(`Upload button for post ID ${postId} not found`);
+                    return;
+                }
+                
+                let uploadModal = null;
+                let changeImageModal = null;
+                
+                if (uploadModalEl) {
+                    uploadModal = new bootstrap.Modal(uploadModalEl);
+                }
+                
+                if (changeModalEl) {
+                    changeImageModal = new bootstrap.Modal(changeModalEl);
+                }
+                
+                // When upload modal is shown, copy the image name from change form
+                if (uploadModalEl && directImageName && changeImageInput) {
+                    uploadModalEl.addEventListener('show.bs.modal', function() {
+                        directImageName.value = changeImageInput.value;
+                        
+                        // Reset any previous alert
+                        if (uploadAlert) {
+                            uploadAlert.classList.add('d-none');
+                            uploadAlert.classList.remove('alert-danger', 'alert-success');
+                            uploadAlert.textContent = '';
+                        }
+                    });
+                }
+                
+                // Handle direct upload button click
+                directUploadButton.addEventListener('click', function() {
+                    console.log('Direct upload button clicked for post ID: ' + postId);
+                    
+                    const directForm = document.getElementById('uploadImageForm' + postId);
+                    if (!directForm) {
+                        console.error(`Direct form for post ID ${postId} not found!`);
+                        
+                        // Try finding the form directly from modal
+                        const uploadModal = document.getElementById('uploadImageModal' + postId);
+                        if (uploadModal) {
+                            const formInModal = uploadModal.querySelector('form');
+                            if (formInModal) {
+                                console.log(`Found form inside modal for post ID ${postId}, using that instead`);
+                                formInModal.submit();
+                                return;
+                            }
+                        }
+                        
+                        alert('Upload form not found. Please refresh the page and try again.');
+                        return;
+                    }
+                    
+                    const directImageName = document.getElementById('direct_modal_image_name_' + postId);
+                    if (!directImageName) {
+                        console.error(`Image name input for post ID ${postId} not found!`);
+                        return;
+                    }
+                    
+                    // Check if image name is provided
+                    if (!directImageName.value.trim()) {
+                        if (uploadAlert) {
+                            uploadAlert.textContent = 'Please provide an image name';
+                            uploadAlert.classList.remove('d-none', 'alert-success', 'alert-warning');
+                            uploadAlert.classList.add('alert-danger');
+                        } else {
+                            alert('Please provide an image name');
+                        }
+                        return;
+                    }
+                    
+                    const directImage = document.getElementById('direct_modal_image_' + postId);
+                    if (!directImage) {
+                        console.error(`Direct image input for post ID ${postId} not found!`);
+                        return;
+                    }
+                    
+                    // Check if a file is selected
+                    if (!directImage.files || !directImage.files[0]) {
+                        if (uploadAlert) {
+                            uploadAlert.textContent = 'Please select a file to upload';
+                            uploadAlert.classList.remove('d-none', 'alert-success', 'alert-warning');
+                            uploadAlert.classList.add('alert-danger');
+                        } else {
+                            alert('Please select a file to upload');
+                        }
+                        return;
+                    }
+                    
+                    // Validate form
+                    if (!directForm.checkValidity()) {
+                        directForm.reportValidity();
+                        return;
+                    }
+                    
+                    // Store the image name in localStorage before submitting
+                    localStorage.setItem('lastUploadedImageName_' + postId, directImageName.value.trim());
+                    
+                    // Show loading state
+                    directUploadButton.disabled = true;
+                    directUploadButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+                    
+                    // Submit the form
+                    directForm.submit();
+                });
+            })();
+            <?php endforeach; ?>
+            
+            // Handle URL parameter for image_uploaded
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('image_uploaded') && urlParams.get('image_uploaded') === '1') {
+                <?php foreach($posts as $post): ?>
+                (function() {
+                    const postId = <?= htmlspecialchars($post['id']) ?>;
+                    const lastUploadedImageName = localStorage.getItem('lastUploadedImageName_' + postId);
+                    if (lastUploadedImageName) {
+                        const changeImageInput = document.getElementById('image_name_' + postId);
+                        if (changeImageInput) {
+                            changeImageInput.value = lastUploadedImageName;
+                            localStorage.removeItem('lastUploadedImageName_' + postId);
+                        }
+                    }
+                })();
+                <?php endforeach; ?>
+            }
+        });
+    </script>
 </body>
 </html> 

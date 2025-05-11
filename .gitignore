@@ -38,6 +38,9 @@ Thumbs.db
 # Config files with sensitive information
 config.php
 login.php
+jeanineblogroutes.php
+imagekit-curl.txt
+upload_image.php
 
 # Composer vendor directory
 vendor/
