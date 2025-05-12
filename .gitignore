@@ -41,6 +41,7 @@ login.php
 jeanineblogroutes.php
 imagekit-curl.txt
 upload_image.php
+update_image.php
 
 # Composer vendor directory
 vendor/
